@@ -6,4 +6,4 @@ module Text.New.Speak
 import System.Process
 
 say s = do
-  runCommand $ "say" ++ s
+  runCommand $ "say " ++ s
