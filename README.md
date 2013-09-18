@@ -6,8 +6,10 @@ Text.New.Speak.hs
 say :: String -> IO System.Process.Internals.ProcessHandle
 >say "hello world"
 
+NOTE:it works for mac os x
 
-Text.New.NumberToText
+
+Text.New.NumberToText.hs
 ---------------------
 numberToText :: Integer -> String
 >numberToText 123
