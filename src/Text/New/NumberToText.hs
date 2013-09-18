@@ -95,13 +95,13 @@ toText131415 n
 
 -- | given a float number, show its words in English
 -- | also works for minus float
-digitToText :: Float -> String
+digitToText :: String -> String
 digitToText d
-  | d < 0 = "minus " ++ digitToText (-d)
-  | fromInteger (floor d) == d = numberToText a
+  | head d == '-'  = "minus " ++ digitToText (tail d)
+  | not $ elem '.' d = numberToText a
   | otherwise = numberToText a ++ " point " ++ digitsText b
-                where a = toInteger $ floor d
-                      b = concat $ tail $ splitOn "." $ show d
+                where a = read (head $ splitOn "." d) :: Integer
+                      b = last $ splitOn "." d
 
 -- | given a string with all digits, output a string
 digitsText :: String -> String
