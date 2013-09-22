@@ -30,3 +30,35 @@ digitToText :: String -> String
 TODO:
 I don't know how big number I can manipulate.
 There is some problem when it reaches "10^3006".
+
+
+Updated:
+========================
+========================
+Install:
+```
+git clone https://github.com/eccstartup/numberToText.git
+cd numberToText
+cabal configure
+cabal build
+cabal install
+```
+--------------------
+Useage:
+```
+>import Text.New.NumberToText
+>numberToEnglish "1234567890"
+"one billion, two hundred and thirty-four million, five hundred and sixty-seven thousand, eight hundred and ninety"
+
+>digitToEnglish "1234567890.123456789"
+"one billion, two hundred and thirty-four million, five hundred and sixty-seven thousand, eight hundred and ninety point one two three four five six seven eight nine"
+
+
+>import Text.New.Speak
+say $ numberToEnglish "12345678901234567890"
+--This works for mac os x!
+--You can hear it!
+```
+------------------------
+Useful link:
+[How high can you count?](http://www.isthe.com/chongo/tech/math/number/howhigh.html)
