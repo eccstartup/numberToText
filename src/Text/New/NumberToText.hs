@@ -13,10 +13,10 @@ import Data.Char
 numberToText :: Integer -> String
 numberToText n
   | n < 0 = "minus " ++ numberToText (-n)
-  | bitWidth n == 1 = toText1 n
-  | bitWidth n == 2 = toText2 n
-  | bitWidth n == 3 = toText3 n
-  | bitWidth n < 7 = toText6 n
+  | t == 1 = toText1 n
+  | t == 2 = toText2 n
+  | t == 3 = toText3 n
+{-  | bitWidth n < 7 = toText6 n
   | bitWidth n < 10 = toText9 n
   | bitWidth n < 12 = toText12 n
   | bitWidth n < 15 = toText15 n
@@ -40,9 +40,12 @@ numberToText n
   | n == (10^100) = "one googol"
   | n == (10^303) = "one centillion"
   | n == (10^3003) = "one millillion"
---  | n == (10^3000003) = "one milli-millillion"
---  | n == (10^(10^100)) = "one googolplex"
-  | otherwise = fail "too long number"
+  | n == (10^3000003) = "one milli-millillion"
+  | n == (10^(10^100)) = "one googolplex"
+-}
+  | n > (10^3006) = fail "too long number"
+  | otherwise = toText (toTriples t) n
+  where t = bitWidth n
 
 -- | number of digits
 bitWidth n = length $ show n
@@ -89,6 +92,7 @@ toText3 n
   | mod n 100 == 0 = toText1 (div n 100) ++ " hundred"
   | otherwise = toText3 (n - (mod n 100)) ++ " and " ++ toText2 (mod n 100)
 
+{-
 -- | 4 to 6 digit number
 toText6 n
   | n < 10^3 = toText3 n
@@ -188,7 +192,7 @@ toText51 n
 -- | 52 to 54 digit number
 toText54 n
   | n < 10^51 = toText51 n
-  | (mod n $ 10^51) == 0 = toText3 (div n $ 10^51) ++ " sexdecillion"
+  | (mod n $ 10^51) == 0 = toText3 (div n $ 10^51) ++ " sedecillion"
   | otherwise = toText54 (n - (mod n $ 10^51)) ++ ", " ++ toText51 (mod n $ 10^51)
 
 -- | 55 to 57 digit number
@@ -214,6 +218,43 @@ toText66 n
   | n < 10^63 = toText63 n
   | (mod n $ 10^63) == 0 = toText3 (div n $ 10^63) ++ " vigintillion"
   | otherwise = toText66 (n - (mod n $ 10^63)) ++ ", " ++ toText63 (mod n $ 10^63)
+-}
+
+toText bit n
+  | bit == 3 = toText3 n
+  | n < 10^(bit - 3) = toText (bit - 3) n
+  | (mod n $ 10^(bit - 3)) == 0 = toText 3 (div n $ 10^(bit - 3)) ++ " " ++ numText (bit - 3)
+  | otherwise = toText bit (n - (mod n $ 10^(bit - 3))) ++ ", " ++ toText (bit - 3) (mod n $ 10^(bit - 3))
+
+numText bit
+  | t == 0 = "thousand"
+  | t == 1 = "million"
+  | t == 2 = "billion"
+  | t == 3 = "trillion"
+  | t == 4 = "quadrillion"
+  | t == 5 = "quintillion"
+  | t == 6 = "sextillion"
+  | t == 7 = "septillion"
+  | t == 8 = "octillion"
+  | t == 9 = "nonillion"
+  | t == 1000 = "milliatillion"
+  | t > 1000 = fail "too large number"
+  | otherwise = afix !! a ++ cfix !! c ++ bfix !! b ++ xfix !! c
+  where t = quot (bit - 3) 3
+        a = div t 100 -- | a of 134 == 1
+        c = mod t 10  -- | c of 134 == 4
+        b = mod (div t 10) 10 -- | b of 134 == 3
+        afix = ["", "cen", "duocen", "trecen", "quadringen", "quingen", "sescen", "septingen", "octingen", "nongen"]
+        cfix = ["", "un", "duo", "tre", "quattuor", "quin", "sex", "septen", "octo", "novem"]
+        bfix = ["", "dec", "vigin", "trigin", "quadragin", "quinquagin", "sexagin", "septuagin", "octogin", "nonagin"]
+        xfix = ["", "illion", "tillion", "tillion", "tillion", "tillion", "tillion", "tillion", "tillion", "tillion"]
+
+-- | toTriples 5 = 6
+-- | toTriples 6 = 6
+toTriples n
+  | mod n 3 == 0 = n
+  | otherwise = n + 3 - (mod n 3)
+
 
 -- | given a float number, show its words in English
 -- | also works for minus float
