@@ -37,11 +37,11 @@ numberToText n
   | bitWidth n < 60 = toText60 n
   | bitWidth n < 63 = toText63 n
   | bitWidth n < 66 = toText66 n
-  | n == (10^100) = "one googol"
-  | n == (10^303) = "one centillion"
-  | n == (10^3003) = "one millillion"
-  | n == (10^3000003) = "one milli-millillion"
-  | n == (10^(10^100)) = "one googolplex"
+--  | n == (10^100) = "one googol"
+--  | n == (10^303) = "one centillion"
+--  | n == (10^3003) = "one millillion"
+--  | n == (10^3000003) = "one milli-millillion"
+--  | n == (10^(10^100)) = "one googolplex"
   | otherwise = fail "too long number"
 
 -- | number of digits
