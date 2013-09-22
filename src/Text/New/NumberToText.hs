@@ -1,13 +1,17 @@
 module Text.New.NumberToText
        (
         numberToText,
-        digitToText
+        digitToText,
+        numberToEnglish,
+        digitToEnglish
        ) where
 
 import Data.List.Split
 import Data.Char
+import qualified Data.List.Split.Internals as SI
+import Data.String.Utils
 
-
+-- | useless later
 -- | given an Integer n, show its words in English
 -- | it works for minus numbers
 numberToText :: Integer -> String
@@ -16,37 +20,11 @@ numberToText n
   | t == 1 = toText1 n
   | t == 2 = toText2 n
   | t == 3 = toText3 n
-{-  | bitWidth n < 7 = toText6 n
-  | bitWidth n < 10 = toText9 n
-  | bitWidth n < 12 = toText12 n
-  | bitWidth n < 15 = toText15 n
-  | bitWidth n < 18 = toText18 n
-  | bitWidth n < 21 = toText21 n
-  | bitWidth n < 24 = toText24 n
-  | bitWidth n < 27 = toText27 n
-  | bitWidth n < 30 = toText30 n
-  | bitWidth n < 33 = toText33 n
-  | bitWidth n < 36 = toText36 n
-  | bitWidth n < 39 = toText39 n
-  | bitWidth n < 42 = toText42 n
-  | bitWidth n < 45 = toText45 n
-  | bitWidth n < 48 = toText48 n
-  | bitWidth n < 51 = toText51 n
-  | bitWidth n < 54 = toText54 n
-  | bitWidth n < 57 = toText57 n
-  | bitWidth n < 60 = toText60 n
-  | bitWidth n < 63 = toText63 n
-  | bitWidth n < 66 = toText66 n
-  | n == (10^100) = "one googol"
-  | n == (10^303) = "one centillion"
-  | n == (10^3003) = "one millillion"
-  | n == (10^3000003) = "one milli-millillion"
-  | n == (10^(10^100)) = "one googolplex"
--}
   | n > (10^3006) = fail "too long number"
   | otherwise = toText (toTriples t) n
   where t = bitWidth n
 
+-- | useless later
 -- | number of digits
 bitWidth n = length $ show n
 
@@ -92,140 +70,14 @@ toText3 n
   | mod n 100 == 0 = toText1 (div n 100) ++ " hundred"
   | otherwise = toText3 (n - (mod n 100)) ++ " and " ++ toText2 (mod n 100)
 
-{-
--- | 4 to 6 digit number
-toText6 n
-  | n < 10^3 = toText3 n
-  | (mod n $ 10^3) == 0 = toText3 (div n $ 10^3) ++ " thousand"
-  | otherwise = toText6 (n - (mod n $ 10^3)) ++ ", " ++ toText3 (mod n $ 10^3)
-
--- | 7 to 9 digit number
-toText9 n
-  | n < 10^6 = toText6 n
-  | (mod n $ 10^6) == 0 = toText3 (div n $ 10^6) ++ " million"
-  | otherwise = toText9 (n - (mod n $ 10^6)) ++ ", " ++ toText6 (mod n $ 10^6)
-
--- | 10 to 12 digit number
-toText12 n
-  | n < 10^9 = toText9 n
-  | (mod n $ 10^9) == 0 = toText3 (div n $ 10^9) ++ " billion"
-  | otherwise = toText12 (n - (mod n $ 10^9)) ++ ", " ++ toText9 (mod n $ 10^9)
-
--- | 13 to 15 digit number
-toText15 n
-  | n < 10^12 = toText12 n
-  | (mod n $ 10^12) == 0 = toText3 (div n $ 10^12) ++ " trillion"
-  | otherwise = toText15 (n - (mod n $ 10^12)) ++ ", " ++ toText12 (mod n $ 10^12)
-
--- | 16 to 18 digit number
-toText18 n
-  | n < 10^15 = toText15 n
-  | (mod n $ 10^15) == 0 = toText3 (div n $ 10^15) ++ " quadrillion"
-  | otherwise = toText18 (n - (mod n $ 10^15)) ++ ", " ++ toText15 (mod n $ 10^15)
-
--- | 19 to 21 digit number
-toText21 n
-  | n < 10^18 = toText18 n
-  | (mod n $ 10^18) == 0 = toText3 (div n $ 10^18) ++ " quintillion"
-  | otherwise = toText21 (n - (mod n $ 10^18)) ++ ", " ++ toText18 (mod n $ 10^18)
-
--- | 22 to 24 digit number
-toText24 n
-  | n < 10^21 = toText21 n
-  | (mod n $ 10^21) == 0 = toText3 (div n $ 10^21) ++ " sextillion"
-  | otherwise = toText24 (n - (mod n $ 10^21)) ++ ", " ++ toText21 (mod n $ 10^21)
-
--- | 25 to 27 digit number
-toText27 n
-  | n < 10^24 = toText24 n
-  | (mod n $ 10^24) == 0 = toText3 (div n $ 10^24) ++ " septillion"
-  | otherwise = toText27 (n - (mod n $ 10^24)) ++ ", " ++ toText24 (mod n $ 10^24)
-
--- | 28 to 30 digit number
-toText30 n
-  | n < 10^27 = toText27 n
-  | (mod n $ 10^27) == 0 = toText3 (div n $ 10^27) ++ " octillion"
-  | otherwise = toText30 (n - (mod n $ 10^27)) ++ ", " ++ toText27 (mod n $ 10^27)
-
--- | 31 to 33 digit number
-toText33 n
-  | n < 10^30 = toText30 n
-  | (mod n $ 10^30) == 0 = toText3 (div n $ 10^30) ++ " nonillion"
-  | otherwise = toText33 (n - (mod n $ 10^30)) ++ ", " ++ toText30 (mod n $ 10^30)
-
--- | 34 to 36 digit number
-toText36 n
-  | n < 10^33 = toText33 n
-  | (mod n $ 10^33) == 0 = toText3 (div n $ 10^33) ++ " decillion"
-  | otherwise = toText36 (n - (mod n $ 10^33)) ++ ", " ++ toText33 (mod n $ 10^33)
-
--- | 37 to 39 digit number
-toText39 n
-  | n < 10^36 = toText36 n
-  | (mod n $ 10^36) == 0 = toText3 (div n $ 10^36) ++ " undecillion"
-  | otherwise = toText39 (n - (mod n $ 10^36)) ++ ", " ++ toText36 (mod n $ 10^36)
-
--- | 40 to 42 digit number
-toText42 n
-  | n < 10^39 = toText39 n
-  | (mod n $ 10^39) == 0 = toText3 (div n $ 10^39) ++ " duodecillion"
-  | otherwise = toText42 (n - (mod n $ 10^39)) ++ ", " ++ toText39 (mod n $ 10^39)
-
--- | 43 to 45 digit number
-toText45 n
-  | n < 10^42 = toText42 n
-  | (mod n $ 10^42) == 0 = toText3 (div n $ 10^42) ++ " tredecillion"
-  | otherwise = toText45 (n - (mod n $ 10^42)) ++ ", " ++ toText42 (mod n $ 10^42)
-
--- | 46 to 48 digit number
-toText48 n
-  | n < 10^45 = toText45 n
-  | (mod n $ 10^45) == 0 = toText3 (div n $ 10^45) ++ " quattuordecillion"
-  | otherwise = toText48 (n - (mod n $ 10^45)) ++ ", " ++ toText45 (mod n $ 10^45)
-
--- | 49 to 51 digit number
-toText51 n
-  | n < 10^48 = toText48 n
-  | (mod n $ 10^48) == 0 = toText3 (div n $ 10^48) ++ " quinquadecillion"
-  | otherwise = toText51 (n - (mod n $ 10^48)) ++ ", " ++ toText48 (mod n $ 10^48)
-
--- | 52 to 54 digit number
-toText54 n
-  | n < 10^51 = toText51 n
-  | (mod n $ 10^51) == 0 = toText3 (div n $ 10^51) ++ " sedecillion"
-  | otherwise = toText54 (n - (mod n $ 10^51)) ++ ", " ++ toText51 (mod n $ 10^51)
-
--- | 55 to 57 digit number
-toText57 n
-  | n < 10^54 = toText54 n
-  | (mod n $ 10^54) == 0 = toText3 (div n $ 10^54) ++ " septendecillion"
-  | otherwise = toText57 (n - (mod n $ 10^54)) ++ ", " ++ toText54 (mod n $ 10^54)
-
--- | 58 to 60 digit number
-toText60 n
-  | n < 10^57 = toText57 n
-  | (mod n $ 10^57) == 0 = toText3 (div n $ 10^57) ++ " octodecillion"
-  | otherwise = toText60 (n - (mod n $ 10^57)) ++ ", " ++ toText57 (mod n $ 10^57)
-
--- | 61 to 63 digit number
-toText63 n
-  | n < 10^60 = toText60 n
-  | (mod n $ 10^60) == 0 = toText3 (div n $ 10^60) ++ " novendecillion"
-  | otherwise = toText63 (n - (mod n $ 10^60)) ++ ", " ++ toText60 (mod n $ 10^60)
-
--- | 64 to 66 digit number
-toText66 n
-  | n < 10^63 = toText63 n
-  | (mod n $ 10^63) == 0 = toText3 (div n $ 10^63) ++ " vigintillion"
-  | otherwise = toText66 (n - (mod n $ 10^63)) ++ ", " ++ toText63 (mod n $ 10^63)
--}
-
+-- | useless later
 toText bit n
   | bit == 3 = toText3 n
   | n < 10^(bit - 3) = toText (bit - 3) n
   | (mod n $ 10^(bit - 3)) == 0 = toText 3 (div n $ 10^(bit - 3)) ++ " " ++ numText (bit - 3)
   | otherwise = toText bit (n - (mod n $ 10^(bit - 3))) ++ ", " ++ toText (bit - 3) (mod n $ 10^(bit - 3))
 
+-- | useless later
 numText bit
   | t == 0 = "thousand"
   | t == 1 = "million"
@@ -241,20 +93,26 @@ numText bit
   | t > 1000 = fail "too large number"
   | otherwise = afix !! a ++ cfix !! c ++ bfix !! b ++ xfix !! c
   where t = quot (bit - 3) 3
-        a = div t 100 -- | a of 134 == 1
-        c = mod t 10  -- | c of 134 == 4
-        b = mod (div t 10) 10 -- | b of 134 == 3
+        -- | a of 134 == 1
+        a = div t 100
+        -- | c of 134 == 4
+        c = mod t 10
+        -- | b of 134 == 3
+        b = mod (div t 10) 10
         afix = ["", "cen", "duocen", "trecen", "quadringen", "quingen", "sescen", "septingen", "octingen", "nongen"]
         cfix = ["", "un", "duo", "tre", "quattuor", "quin", "sex", "septen", "octo", "novem"]
         bfix = ["", "dec", "vigin", "trigin", "quadragin", "quinquagin", "sexagin", "septuagin", "octogin", "nonagin"]
         xfix = ["", "illion", "tillion", "tillion", "tillion", "tillion", "tillion", "tillion", "tillion", "tillion"]
 
+-- | useless later
 -- | toTriples 5 = 6
 -- | toTriples 6 = 6
 toTriples n
   | mod n 3 == 0 = n
   | otherwise = n + 3 - (mod n 3)
 
+------------------------------------------------------------
+------------------------------------------------------------
 
 -- | given a float number, show its words in English
 -- | also works for minus float
@@ -276,3 +134,96 @@ putTogether :: [String] -> String
 putTogether [] = []
 putTogether [x] = x
 putTogether (x:xs) = x ++ " " ++ putTogether xs
+
+------------------------------------------------------------
+------------------------------------------------------------
+
+numberToEnglish :: String -> String
+numberToEnglish word = replace ", zero" "" $ numberToEnglish1 word
+
+numberToEnglish1 :: String -> String
+numberToEnglish1 word
+  | head word == '-'  = "minus " ++ numberToEnglish1 (tail word)
+  | length word1 == 0 = "zero"
+  | length word1 <= 3 = toText3 $ readInt1 word1
+  | otherwise = helper1 n (head words) ++ numberToEnglish1 (concat $ tail words)
+  where words = splitWord word1
+        word1 = dropWhile (=='0') word
+        n = length words - 1
+        helper1 n w
+          | w == "000" = ""
+          | otherwise = toText3 (readInt1 w) ++ " " ++ thousandEnglish n ++ ", "
+
+splitWord :: String -> [String]
+splitWord word = map reverse $ reverse $ (SI.chunksOf 3) $ reverse word
+
+-- | ["123", "456"] to Integer [123, 456]
+readInt1 :: String -> Int
+readInt1 s = read s
+
+-- | ["123", "456"] to Integer [123, 456]
+readInts :: [String] -> [Int]
+readInts s = map read s
+
+thousandEnglish t
+  | t <= 1000 = thousandEnglish1 t
+  | t > 1000 = thousandEnglish2 t
+
+thousandEnglish1 t
+  | t == 0 = ""
+  | t == 1 = "thousand"
+  | t == 2 = "million"
+  | t == 3 = "billion"
+  | t == 4 = "trillion"
+  | t == 5 = "quadrillion"
+  | t == 6 = "quintillion"
+  | t == 7 = "sextillion"
+  | t == 8 = "septillion"
+  | t == 9 = "octillion"
+  | t == 10 = "nonillion"
+  | t == 1000 = "milliatillion"
+  | t < 100 =  afix !! a ++ cfix !! c ++ bfix !! b ++ xfix !! b
+  | otherwise = afix !! a ++ cfix !! c ++ bfix !! b ++ xfix1 !! b
+  where
+        -- | a of 134 == 1
+        a = div t 100
+        -- | c of 134 == 4
+        c = mod t 10
+        -- | b of 134 == 3
+        b = mod (div t 10) 10
+        afix = ["", "cen", "duocen", "trecen", "quadringen", "quingen", "sescen", "septingen", "octingen", "nongen"]
+        cfix = ["", "un", "duo", "tre", "quattuor", "quin", "sex", "septen", "octo", "novem"]
+        bfix = ["", "dec", "vigin", "trigin", "quadragin", "quinquagin", "sexagin", "septuagin", "octogin", "nonagin"]
+        xfix = ["", "illion", "tillion", "tillion", "tillion", "tillion", "tillion", "tillion", "tillion", "tillion"]
+        xfix1 = ["tillion", "illion", "tillion", "tillion", "tillion", "tillion", "tillion", "tillion", "tillion", "tillion"]
+
+thousandEnglish2 t = (concat $ zipWith helper2 aa indexes) ++ "tillion"
+                 where aa = zipWith (-) (repeat kk) [0..kk]
+                       kk = length indexes - 1
+                       indexes = readInts $ splitWord $ show t
+
+-- | k times "millia", n < 1000
+helper2 k n = afix !! a ++ cfix !! c ++ bfix !! b ++ rep k
+        where
+              -- | a of 134 == 1
+              a = div n 100
+              -- | c of 134 == 4
+              c = mod n 10
+              -- | b of 134 == 3
+              b = mod (div n 10) 10
+              afix = ["", "cen", "duocen", "trecen", "quadringen", "quingen", "sescen", "septingen", "octingen", "nongen"]
+              cfix = ["", "un", "duo", "tre", "quattuor", "quin", "sex", "septen", "octo", "novem"]
+              bfix = ["", "dec", "vigin", "trigin", "quadragin", "quinquagin", "sexagin", "septuagin", "octogin", "nonagin"]
+              --xfix = ["", "tillion", "tillion", "tillion", "tillion", "tillion", "tillion", "tillion", "tillion", "tillion"]
+              thou = "millia"
+              rep t = concat $ replicate t thou
+
+-- | given a float String, show its words in English
+-- | also works for minus float String
+digitToEnglish :: String -> String
+digitToEnglish d
+  | head d == '-'  = "minus " ++ digitToText (tail d)
+  | not $ elem '.' d = numberToEnglish a
+  | otherwise = numberToEnglish a ++ " point " ++ digitsText b
+                where a = head $ splitOn "." d
+                      b = last $ splitOn "." d

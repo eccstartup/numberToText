@@ -61,7 +61,7 @@ library
   -- other-extensions:    
   
   -- Other library packages from which modules are imported.
-  build-depends:       base, process,split
+  build-depends:       base, process,split,MissingH
   
   -- Directories containing source files.
   -- hs-source-dirs:      
